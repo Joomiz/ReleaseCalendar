@@ -1,0 +1,112 @@
+﻿@using Joomiz.ReleaseCalendar.Models
+@model Joomiz.ReleaseCalendar.Models.Calendar
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+@helper DayCell(Month month, int dayNumber)
+{
+
+    if (dayNumber < month.DaysInMonth)
+    {
+        if (Model.IsRelease(month.Days[dayNumber]))
+        {
+            <td class="release"><a href="#">@month.Days[dayNumber].Day</a></td>
+        }
+        else if (Model.IsInfrastructure(month.Days[dayNumber]))
+        {
+            <td class="infrastructure"><a href="#">@month.Days[dayNumber].Day</a></td>
+        }
+        else if (Model.IsFreezing(month.Days[dayNumber]))
+        {
+            <td class="freezing"><a href="#">@month.Days[dayNumber].Day</a></td>
+        }
+        else
+        {
+            <td><a href="#">@month.Days[dayNumber].Day</a></td>
+        }
+    }
+    else
+    {
+        <td class="off"><a href="#">&nbsp;</a></td>
+    }
+}
+
+
+<h1>Calendário @Model.Description @Model.Year.Number</h1>
+
+
+@foreach (Month month in Model.Year.Months)
+{
+    <div class="container">
+        <table class="cal">
+            <caption>
+                @month.Name
+            </caption>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (month.TotalWeeks() < 6)
+                {
+                    <tr>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                    </tr>
+                }
+
+                <tr>
+                    @for (int emptyDays = 0; emptyDays < (int)month.FirstWeekDay; emptyDays++)
+                    {
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                    }
+
+                    @for (int firstDays = (int)month.FirstWeekDay; firstDays < 7; firstDays++)
+                    {
+                        <td><a href="#">@month.Days[firstDays - (int)month.FirstWeekDay].Day</a></td>
+                    }
+                </tr>
+
+                @for (int otherDays = 7 - (int)month.FirstWeekDay; otherDays < month.DaysInMonth; otherDays = otherDays + 7)
+                {
+                    <tr>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            @DayCell(month, otherDays + i);
+                        }
+                    </tr>
+                }
+
+                @if (month.TotalWeeks() < 5)
+                {
+                    <tr>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                        <td class="off"><a href="#">&nbsp;</a></td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+}
